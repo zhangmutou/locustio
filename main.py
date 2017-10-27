@@ -1,5 +1,3 @@
-import sys,pprint
-print(sys.path)
 import locust
 import runners
 
