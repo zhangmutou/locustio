@@ -1,8 +1,8 @@
 import inspect
 import six
 
-from core import Locust, TaskSet
-from log import console_logger
+from .core import Locust, TaskSet
+from .log import console_logger
 
 def print_task_ratio(locusts, total=False, level=0, parent_ratio=1.0):
     d = get_task_ratio_dict(locusts, total=total, parent_ratio=parent_ratio)
@@ -45,7 +45,7 @@ def get_task_ratio_dict(tasks, total=False, parent_ratio=1.0):
                 d["tasks"] = get_task_ratio_dict(T, total, ratio)
             else:
                 d["tasks"] = get_task_ratio_dict(T, total)
-        
+
         task_dict[locust.__name__] = d
 
     return task_dict

@@ -12,9 +12,9 @@ import six
 from gevent import wsgi
 from flask import Flask, make_response, request, render_template
 
-import runners
-from cache import memoize
-from runners import MasterLocustRunner
+from . import runners
+from .cache import memoize
+from .runners import MasterLocustRunner
 from locust.stats import median_from_dict
 from locust import __version__ as version
 
@@ -42,7 +42,7 @@ def index():
         host = runners.locust_runner.locust_classes[0].host
     else:
         host = None
-    
+
     return render_template("index.html",
         state=runners.locust_runner.state,
         is_distributed=is_distributed,
@@ -74,7 +74,7 @@ def stop():
 def reset_stats():
     runners.locust_runner.stats.reset_all()
     return "ok"
-    
+
 @app.route("/stats/requests/csv")
 def request_stats_csv():
     rows = [
@@ -91,7 +91,7 @@ def request_stats_csv():
             '"Requests/s"',
         ])
     ]
-    
+
     for s in chain(_sort_stats(runners.locust_runner.request_stats), [runners.locust_runner.stats.aggregated_stats("Total", full_request_history=True)]):
         rows.append('"%s","%s",%i,%i,%i,%i,%i,%i,%i,%.2f' % (
             s.method,
@@ -168,7 +168,7 @@ def request_stats():
     if stats:
         report["total_rps"] = stats[len(stats)-1]["current_rps"]
         report["fail_ratio"] = runners.locust_runner.stats.aggregated_stats("Total").fail_ratio
-        
+
         # since generating a total response times dict with all response times from all
         # urls is slow, we make a new total response time dict which will consist of one
         # entry per url with the median response time as key and the number of requests as
@@ -176,14 +176,14 @@ def request_stats():
         response_times = defaultdict(int) # used for calculating total median
         for i in xrange(len(stats)-1):
             response_times[stats[i]["median_response_time"]] += stats[i]["num_requests"]
-        
+
         # calculate total median
         stats[len(stats)-1]["median_response_time"] = median_from_dict(stats[len(stats)-1]["num_requests"], response_times)
-    
+
     is_distributed = isinstance(runners.locust_runner, MasterLocustRunner)
     if is_distributed:
         report["slave_count"] = runners.locust_runner.slave_count
-    
+
     report["state"] = runners.locust_runner.state
     report["user_count"] = runners.locust_runner.user_count
     return json.dumps(report)
@@ -193,9 +193,9 @@ def exceptions():
     response = make_response(json.dumps({
         'exceptions': [
             {
-                "count": row["count"], 
-                "msg": row["msg"], 
-                "traceback": row["traceback"], 
+                "count": row["count"],
+                "msg": row["msg"],
+                "traceback": row["traceback"],
                 "nodes" : ", ".join(row["nodes"])
             } for row in six.itervalues(runners.locust_runner.exceptions)
         ]
@@ -211,7 +211,7 @@ def exceptions_csv():
     for exc in six.itervalues(runners.locust_runner.exceptions):
         nodes = ", ".join(exc["nodes"])
         writer.writerow([exc["count"], exc["msg"], exc["traceback"], nodes])
-    
+
     data.seek(0)
     response = make_response(data.read())
     file_name = "exceptions_{0}.csv".format(time())

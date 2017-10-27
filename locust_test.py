@@ -47,10 +47,7 @@
 
 # class User(Locust):
 #     task_set = UserTask
-
-import sys
-print(sys.path)
-from core import HttpLocust, Locust, TaskSet, task, events
+from locust import HttpLocust, Locust, TaskSet, task, events
 
 import random, traceback
 
