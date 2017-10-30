@@ -1,13 +1,14 @@
 import re
 import time
-from six.moves.urllib.parse import urlparse, urlunparse
-import six
 
 import requests
-from requests import Response, Request
+import six
+from requests import Request, Response
 from requests.auth import HTTPBasicAuth
-from requests.exceptions import (RequestException, MissingSchema,
-    InvalidSchema, InvalidURL)
+from requests.exceptions import (InvalidSchema, InvalidURL, MissingSchema,
+                                 RequestException)
+
+from six.moves.urllib.parse import urlparse, urlunparse
 
 from . import events
 from .exception import CatchResponseError, ResponseError
@@ -39,10 +40,10 @@ class HttpSession(requests.Session):
     Each of the methods for making requests also takes two additional optional arguments which
     are Locust specific and doesn't exist in python-requests. These are:
 
-    :param name: (optional) An argument that can be specified to use as label in Locust's statistics instead of the URL path.
+    :param name: (optional) An argument that can be specified to use as label in Locust's statistics instead of the URL path. 
                  This can be used to group different URL's that are requested into a single entry in Locust's statistics.
-    :param catch_response: (optional) Boolean argument that, if set, can be used to make a request return a context manager
-                           to work as argument to a with statement. This will allow the request to be marked as a fail based on the content of the
+    :param catch_response: (optional) Boolean argument that, if set, can be used to make a request return a context manager 
+                           to work as argument to a with statement. This will allow the request to be marked as a fail based on the content of the 
                            response, even if the response code is ok (2xx). The opposite also works, one can use catch_response to catch a request
                            and then mark it as successful even if the response code was not (i.e 500 or 404).
     """
